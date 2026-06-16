@@ -10,11 +10,12 @@ terraform {
 
 # 2. Configure the Microsoft Azure Provider
 provider "azurerm" {
+  skip_provider_registrations = "true"
   features {}
 }
 
 # 3. Create the Lab Resource Group (Observation: The Foundational 
-Container)
+#Container)
 resource "azurerm_resource_group" "lab_rg" {
   name     = "rg-lab-secret-sweep"
   location = "northeurope" # Set to North Europe (Ireland data center)
