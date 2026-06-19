@@ -10,7 +10,7 @@ terraform {
 
 # 2. Configure the Microsoft Azure Provider
 provider "azurerm" {
-  skip_provider_registrations = "true"
+  skip_provider_registration = true
   features {}
 }
 
