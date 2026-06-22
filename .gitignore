@@ -8,3 +8,7 @@
 # Ignore variable files containing secret values
 *.tfvars
 *.tfvars.json
+**.tfstate**
+**.tfstate.backup**
+**_key.pem**
+**.terraform/**
