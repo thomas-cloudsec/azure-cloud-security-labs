@@ -42,7 +42,6 @@ Here is the chronological breakdown of everything that broke during deployment, 
   }
 
 ```
----
 
 ```
 ### Case 2: Git Leak Risk - Bad `.gitignore` Advice
