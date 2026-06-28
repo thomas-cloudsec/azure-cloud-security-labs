@@ -5,6 +5,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 3.0"
     }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.0"
+    }
   }
 }
 
@@ -14,58 +18,59 @@ provider "azurerm" {
   features {}
 }
 
-# 3. Create the Lab Resource Group (Observation: The Foundational 
-#Container)
+# 3. Create the Lab Resource Group (Observation: The Foundational Container)
 resource "azurerm_resource_group" "lab_rg" {
   name     = "rg-lab-secret-sweep"
-  location = "northeurope" # Set to North Europe (Ireland data center)
+  location = "ukwest"
 }
 
 # 4. Create a Virtual Network
 resource "azurerm_virtual_network" "lab_vnet" {
-    name                = "vnet-security-lab"
-    address_space       = ["10.0.0.0/16"]
-    location            = azurerm_resource_group.lab_rg.location
-    resource_group_name = azurerm_resource_group.lab_rg.name
+  name                = "vnet-security-lab"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.lab_rg.location
+  resource_group_name = azurerm_resource_group.lab_rg.name
 }
 
 # 5. Create a Subnet for the Honeypot VM
 resource "azurerm_subnet" "lab_subnet" {
-    name                    = "sub-honeypot"
-    resource_group_name     = azurerm_resource_group.lab_rg.name
-    virtual_network_name    = azurerm_virtual_network.lab_vnet.name
-    address_prefixes        = ["10.0.1.0/24"]
+  name                 = "sub-honeypot"
+  resource_group_name  = azurerm_resource_group.lab_rg.name
+  virtual_network_name = azurerm_virtual_network.lab_vnet.name
+  address_prefixes     = ["10.0.1.0/24"]
 }
 
-# 6. Creating a Network Security Grup (Firewall)
-resource "azurerm_network_security_group" "lab-nsg" {
-    name                    = "nsg-honeypot"
-    location                = azurerm_resource_group.lab_rg.location
-    resource_group_name     = azurerm_resource_group.lab_rg.name
+# 6. Creating a Network Security Group (Firewall)
+# CORRECTION: Fixed hyphen to underscore to match down-stream references
+resource "azurerm_network_security_group" "lab_nsg" {
+  name                = "nsg-honeypot"
+  location            = azurerm_resource_group.lab_rg.location
+  resource_group_name = azurerm_resource_group.lab_rg.name
 
-# RULE to allow SSH from the internet for testing/attack simulation
-security_rule {
-    name                        = "Allow-SSH-Inbound"
-    priority                    = 1000
-    direction                   = "Inbound"
-    access                      = "Allow"
-    protocol                    = "Tcp"
-    source_port_range           = "*"
-    destination_port_range      = "22"
-    source_address_prefix       = "*"
-    destination_address_prefix  = "*"
- }
+  # RULE to allow SSH from the internet for testing/attack simulation
+  security_rule {
+    name                       = "Allow-SSH-Inbound"
+    priority                   = 1000
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
 }
 
-# 1. Create a Public IP Address so the VM can be reached from the internet
+# 7. Create a Public IP Address so the VM can be reached from the internet
 resource "azurerm_public_ip" "honeypot_pip" {
   name                = "pip-honeypot"
   location            = azurerm_resource_group.lab_rg.location
   resource_group_name = azurerm_resource_group.lab_rg.name
-  allocation_method   = "Dynamic"
+  allocation_method   = "Static" # Changed to Static to avoid zero-IP return latency
+  sku                 = "Standard" # FIX: Explicitly request the Standard SKU allowed by your subscription
 }
 
-# 2. Create the Network Interface Card (NIC)
+# 8. Create the Network Interface Card (NIC)
 resource "azurerm_network_interface" "honeypot_nic" {
   name                = "nic-honeypot"
   location            = azurerm_resource_group.lab_rg.location
@@ -79,24 +84,30 @@ resource "azurerm_network_interface" "honeypot_nic" {
   }
 }
 
-# 3. Connect the Security Group (NSG) to our Network Interface (NIC)
+# 9a. Connect the Security Group (NSG) to our Network Interface (NIC)
 resource "azurerm_network_interface_security_group_association" "nic_nsg_link" {
   network_interface_id      = azurerm_network_interface.honeypot_nic.id
   network_security_group_id = azurerm_network_security_group.lab_nsg.id
 }
 
-# 4. Create an SSH Key Pair for secure admin authentication
+# 9b. CORRECTION ADDITION: Link NSG directly to Subnet boundary
+resource "azurerm_subnet_network_security_group_association" "subnet_nsg_link" {
+  subnet_id                 = azurerm_subnet.lab_subnet.id
+  network_security_group_id = azurerm_network_security_group.lab_nsg.id
+}
+
+# 10. Create an SSH Key Pair for secure admin authentication
 resource "tls_private_key" "ssh_key" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
-# 5. Deploy the Ubuntu Linux Honeypot Virtual Machine
+# 11. Deploy the Ubuntu Linux Honeypot Virtual Machine
 resource "azurerm_linux_virtual_machine" "honeypot_vm" {
   name                = "vm-honeypot-v1"
   resource_group_name = azurerm_resource_group.lab_rg.name
   location            = azurerm_resource_group.lab_rg.location
-  size                = "Standard_B1s" # Low-cost burstable
+  size                = "Standard_D2s_v3" # CORRECTION: Set to your verified account baseline
   admin_username      = "attacker_bait"
 
   network_interface_ids = [
