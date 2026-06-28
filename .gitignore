@@ -4,11 +4,13 @@
 # Ignore state files (which can contain plain-text secrets)
 *.tfstate
 *.tfstate.*
-
-# Ignore variable files containing secret values
 *.tfvars
 *.tfvars.json
-**.tfstate**
-**.tfstate.backup**
-**_key.pem**
-**.terraform/**
+
+# Backup files and plans
+*.tfplan
+*tfstate.backup
+
+# Secure Private Keys
+*.pem
+*key.pem
