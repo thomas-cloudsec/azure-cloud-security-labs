@@ -43,7 +43,6 @@ Here is the chronological breakdown of everything that broke during deployment, 
 
 ```
 
-```
 ### Case 2: Git Leak Risk - Bad `.gitignore` Advice
 
 * **What Happened:** I needed to hide my sensitive Terraform state files and private keys from uploading to GitHub, but my initial wildcard tracking was messed up.
