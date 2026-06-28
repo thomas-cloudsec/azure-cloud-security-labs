@@ -2,7 +2,7 @@
 
 Hey there! This is my hands-on engineering log. It documents how I set up an isolated cloud security lab in Microsoft Azure, ran into real-world errors, and figured out how to fix them using modern DevSecOps practices. 
 
-Instead of just clicking buttons in a cloud portal, I built everything through code. It wasn't a perfectly smooth ride—I hit roadblocks with cloud quotas, Git sync issues, and key mismatches. I’ve documented every mistake and fix below so you don't have to waste time failing the same way I did.
+Instead of just clicking buttons in a cloud portal, I built everything through code (IaC - Infrastructure as Code). It wasn't a perfectly smooth ride — I hit roadblocks with cloud quotas, Git sync issues, and key mismatches. I’ve documented every mistake and fix below so you don't have to waste time failing the same way I did.
 
 ---
 
