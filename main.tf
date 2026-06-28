@@ -67,7 +67,7 @@ resource "azurerm_public_ip" "honeypot_pip" {
   location            = azurerm_resource_group.lab_rg.location
   resource_group_name = azurerm_resource_group.lab_rg.name
   allocation_method   = "Static" # Changed to Static to avoid zero-IP return latency
-  sku                 = "Standard" # FIX: Explicitly request the Standard SKU allowed by your subscription
+  sku                 = "Standard" # FIX: Explicitly request the Standard SKU allowed by subscription
 }
 
 # 8. Create the Network Interface Card (NIC)
@@ -107,7 +107,7 @@ resource "azurerm_linux_virtual_machine" "honeypot_vm" {
   name                = "vm-honeypot-v1"
   resource_group_name = azurerm_resource_group.lab_rg.name
   location            = azurerm_resource_group.lab_rg.location
-  size                = "Standard_D2s_v3" # CORRECTION: Set to your verified account baseline
+  size                = "Standard_D2s_v3" # This is where you check your VM size within the GUI interface within the Azure portal to facilitate the VM's launch
   admin_username      = "attacker_bait"
 
   network_interface_ids = [
