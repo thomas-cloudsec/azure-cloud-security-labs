@@ -41,7 +41,7 @@ Here is the chronological breakdown of everything that broke during deployment, 
     sku                 = "Standard" 
   }
 
-```
+``` ```
 
 ### Case 2: Git Leak Risk - Bad `.gitignore` Advice
 
