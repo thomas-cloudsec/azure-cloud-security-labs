@@ -26,8 +26,6 @@ Originally, the goal here was to build a live "Honeypot"—a vulnerable server p
 
 > **💡 Pro-Tip for finding VM Sizes:** If you are writing Terraform code and don't know which VM sizes are actually available to your specific account, don't guess. Go to the Azure Portal GUI, start creating a virtual machine manually, select your region, and look at the "Size" dropdown. It will show you exactly what is allowed. Doing this via the CLI is possible but much slower!
 
----
-
 ## 🛑 The Troubleshooting Log: Mistakes & Fixes
 
 Here is the chronological breakdown of everything that broke during deployment, why it broke, and the exact code used to fix it.
@@ -103,13 +101,11 @@ After spending hours successfully building and securing this cloud network, I re
 
 My target was to build a **Secret Sweep** project (an automated tool that scans developers' code for leaked passwords before they get uploaded). Building a live Honeypot virtual machine is a cool infrastructure exercise, but it has nothing to do with writing a code-scanning script.
 
+I used AI to help in the learning process and if you don’t have a clear vision of what you want to be done, the AI will drift away from your main target/goal. Be aware of what you want, ask the AI multiple times to help you in the process but double-check if it's aligned with your main goal.
+
 **Moving Forward:**
-I am destroying the active Azure compute nodes to avoid unnecessary costs. Instead of managing a live server, I am pivoting to writing a local Python/Bash script using Regular Expressions (Regex). This tool will automatically scan staging directories in a CI/CD pipeline, achieving true "Shift-Left Security" by catching leaked keys before they ever hit the internet.
+I am destroying the active Azure compute nodes to avoid unnecessary costs. Instead of managing a live server, I am pivoting to writing a local Python/Bash script using Regular Expressions (Regex). This tool will automatically scan staging directories in a CI/CD pipeline, achieving true "Shift-Left Security" by catching leaked keys before they ever hit the internet. 
 
 ---
 
 *Documented by Thomas CloudSec - 2026*
-
-```
-
-```
